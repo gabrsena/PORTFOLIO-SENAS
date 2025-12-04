@@ -1,9 +1,9 @@
-import React , {  useState ,  useEffect  } from 'react' ;    
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Menu, X, Mail, Linkedin, ChevronRight, ChevronDown, ChevronLeft } from 'lucide-react';
 
 // --- Helper Component for Scroll Animations ---
-const RevealOnScroll = ({ children, delay = 0, className = "" }: { children?: React.ReactNode, delay?: number, className?: string }) => (
+const RevealOnScroll = ({ children, delay = 0, className = "" }) => (
   <motion.div
     initial={{ opacity: 0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -16,7 +16,7 @@ const RevealOnScroll = ({ children, delay = 0, className = "" }: { children?: Re
 );
 
 // --- Helper: Decrypted Text Effect (Matrix/Tech Vibe) ---
-const DecryptedText = ({ text, className }: { text: string, className?: string }) => {
+const DecryptedText = ({ text, className }) => {
   const [displayText, setDisplayText] = useState('');
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
   
@@ -26,7 +26,8 @@ const DecryptedText = ({ text, className }: { text: string, className?: string }
       setDisplayText(
         text
           .split("")
-          .map ( ( _ ,  index ) => { // Alterei 'letter' para '_' para ignorar variáveis ​​não utilizadas               if (index < iteration) {
+          .map((_, index) => {
+            if (index < iteration) {
               return text[index];
             }
             return chars[Math.floor(Math.random() * chars.length)];
@@ -47,8 +48,7 @@ const DecryptedText = ({ text, className }: { text: string, className?: string }
   return <span className={className}>{displayText}</span>;
 };
 
-const App: React.FC = () => {
-    // Removeu activeSectionRef não utilizado
+const App = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -65,7 +65,7 @@ const App: React.FC = () => {
   ];
 
   useEffect(() => {
-    let intervalId: ReturnType<typeof setInterval>;
+    let intervalId;
 
     const tick = () => {
       setWordIndex((prev) => (prev + 1) % animatedWords.length);
@@ -158,7 +158,6 @@ const App: React.FC = () => {
     }
   ];
 
-  // Limit to 7 items as requested previously
   const displayProjects = projects.slice(0, 7);
 
   useEffect(() => {
@@ -183,7 +182,7 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    if (isPaused) return; // Stop rotation if paused
+    if (isPaused) return;
     
     const interval = setInterval(() => {
       nextProject();
@@ -191,7 +190,6 @@ const App: React.FC = () => {
     return () => clearInterval(interval);
   }, [visibleItems, isPaused, displayProjects.length]);
 
-  // --- Scroll Logic ---
   const { scrollY } = useScroll();
   const navBackground = useTransform(
     scrollY,
@@ -204,10 +202,9 @@ const App: React.FC = () => {
     ["blur(0px)", "blur(8px)"]
   );
   
-  // Parallax for Background Video - Subtle vertical movement with scale to prevent gaps
   const bgParallax = useTransform(scrollY, [0, 5000], [0, 200]);
 
-  const scrollToSection = (id: string) => {
+  const scrollToSection = (id) => {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -216,7 +213,6 @@ const App: React.FC = () => {
     }
   };
 
-  // Intersection Observer to detect active section
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -245,7 +241,7 @@ const App: React.FC = () => {
   return (
     <div className="bg-[#0D0D0D] text-[#F2F2F2] font-sans selection:bg-[#B91C1C] selection:text-white overflow-x-hidden w-full">
       
-      {/* Background Video (Visible Everywhere with Parallax) */}
+      {/* Background Video */}
       <motion.div 
         className="fixed inset-0 z-0"
         style={{ y: bgParallax, scale: 1.1 }}
@@ -255,14 +251,14 @@ const App: React.FC = () => {
           loop
           muted
           playsInline
-          preload="metadata" // Optimize: Load only metadata initially
+          preload="metadata"
           className="absolute inset-0 w-full h-full object-cover opacity-100"
           src="https://i.imgur.com/BepzB9N.mp4"
         />
         <div className="absolute inset-0 bg-black/40" />
       </motion.div>
 
-      {/* Logo Container (Fixed and moved OUTSIDE of motion.nav to ensure visibility on mobile home) */}
+      {/* Logo Container */}
       <div 
         className="fixed top-8 left-8 z-[60] cursor-pointer"
         onClick={() => scrollToSection('home')}
@@ -271,7 +267,7 @@ const App: React.FC = () => {
           src="https://i.imgur.com/K3bVnGL.png"
           alt="SENA" 
           className="h-[4.42rem] lg:h-[8.84rem] w-auto object-contain transition-all duration-300"
-          loading="eager" // Important logo, load immediately
+          loading="eager"
         />
       </div>
 
@@ -289,9 +285,8 @@ const App: React.FC = () => {
         }}
         transition={{ duration: 0.5 }}
       >
-        <div className="flex-1" /> {/* Spacer */}
+        <div className="flex-1" />
 
-        {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-12">
           {navLinks.map((link) => (
             <button
@@ -304,7 +299,6 @@ const App: React.FC = () => {
           ))}
         </div>
 
-        {/* Mobile Menu Button */}
         <div className="md:hidden z-[60]">
           <motion.div
              initial={{ opacity: 1 }}
@@ -350,15 +344,12 @@ const App: React.FC = () => {
           viewport={{ once: false }}
           transition={{ duration: 1 }}
         >
-          {/* Main Title Container - Flex Layout */}
           <div className="flex flex-col md:flex-row items-center justify-center gap-0 md:gap-4 font-anton text-4xl md:text-6xl lg:text-7xl uppercase whitespace-nowrap">
             
-            {/* 1. Static LEFT: "LET ME COOK" */}
             <span className="text-[#F2F2F2]">
               LET ME COOK
             </span>
 
-            {/* 2. Center: "YOUR" - Animates in */}
              <motion.span 
               className="text-[#F2F2F2]"
               initial={{ opacity: 0, x: -20 }}
@@ -368,7 +359,6 @@ const App: React.FC = () => {
               YOUR
             </motion.span>
             
-            {/* 3. Right: Red Animated Word */}
             <div className="relative w-[120px] md:w-[200px] h-[1.4em] flex items-center justify-center">
                <AnimatePresence mode="wait">
                 <motion.span
@@ -387,7 +377,6 @@ const App: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Scroll Down Indicator */}
         <motion.div 
           className="absolute bottom-10 z-20 cursor-pointer"
           onClick={() => scrollToSection('work')}
@@ -398,7 +387,7 @@ const App: React.FC = () => {
         </motion.div>
       </section>
 
-      {/* --- WORK SECTION (Carousel) --- */}
+      {/* --- WORK SECTION --- */}
       <motion.section 
         id="work" 
         className="relative min-h-screen flex flex-col items-center justify-center z-10 py-20"
@@ -407,9 +396,8 @@ const App: React.FC = () => {
         viewport={{ once: false, amount: 0.2 }}
         transition={{ duration: 0.8 }}
       >
-         {/* Semi-transparent overlay to show parallax video but keep text readable */}
          <motion.div 
-           className="absolute inset-0 bg-[#0D0D0D]/70 -z-10" // Reduced opacity for depth visibility
+           className="absolute inset-0 bg-[#0D0D0D]/70 -z-10"
            initial={{ opacity: 0 }}
            whileInView={{ opacity: 1 }}
            transition={{ duration: 1 }}
@@ -425,7 +413,6 @@ const App: React.FC = () => {
               </RevealOnScroll>
             </div>
 
-            {/* Carousel Track */}
             <div 
               className="relative w-full overflow-hidden group" 
               tabIndex={0}
@@ -444,7 +431,6 @@ const App: React.FC = () => {
                 if(e.key === 'ArrowRight') nextProject();
               }}
             >
-              {/* Left Arrow */}
               <button 
                 onClick={(e) => {
                   e.stopPropagation();
@@ -456,7 +442,6 @@ const App: React.FC = () => {
                 <ChevronLeft size={24} />
               </button>
 
-              {/* Right Arrow */}
               <button 
                 onClick={(e) => {
                   e.stopPropagation();
@@ -482,7 +467,6 @@ const App: React.FC = () => {
                     onFocus={() => setCurrentProject(index)}
                   >
                     <div className="relative w-full max-w-[320px] mx-auto aspect-[9/16] bg-[#161616] overflow-hidden">
-                       {/* Content: Video or Image */}
                        {project.video ? (
                           <video 
                             src={project.video}
@@ -490,7 +474,7 @@ const App: React.FC = () => {
                             loop
                             muted
                             playsInline
-                            preload="none" // Lazy load video
+                            preload="none"
                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
                           />
                        ) : (
@@ -503,12 +487,10 @@ const App: React.FC = () => {
                           />
                        )}
                        
-                       {/* Overlay Info */}
                        <div className={`absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/90 to-transparent opacity-100 transition-opacity duration-500`}>
                           <h3 className={`text-3xl font-anton uppercase mb-1 ${project.textColor}`}>{project.title}</h3>
                           <p className="text-sm font-mono text-[#F2F2F2]/60">{project.year}</p>
                           
-                          {/* View Project Button */}
                            <div className="mt-4 overflow-hidden">
                               <button 
                                 className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[#B91C1C] translate-y-8 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 focus:opacity-100 focus:translate-y-0 focus:outline-none"
@@ -524,7 +506,6 @@ const App: React.FC = () => {
               </motion.div>
             </div>
             
-            {/* Screen Reader Live Region */}
             <div className="sr-only" aria-live="polite">
                Showing project {currentProject + 1} of {displayProjects.length}: {displayProjects[currentProject]?.title}
             </div>
@@ -550,7 +531,6 @@ const App: React.FC = () => {
         
         <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           
-          {/* Left Column: Title & Photo */}
           <div className="flex flex-col gap-8 items-center md:items-start">
             <RevealOnScroll>
               <h2 className="text-4xl md:text-5xl font-anton uppercase text-[#B91C1C] mb-8">
@@ -572,7 +552,6 @@ const App: React.FC = () => {
             </RevealOnScroll>
           </div>
 
-          {/* Right Column: Bio Text */}
           <div className="flex flex-col gap-6 text-lg md:text-xl font-light leading-relaxed text-[#F2F2F2]/80">
             <RevealOnScroll delay={0.4}>
               <div className="group transition-all duration-500 hover:opacity-100 opacity-50">
@@ -641,7 +620,6 @@ const App: React.FC = () => {
 
             <RevealOnScroll delay={0.4}>
               <div className="flex flex-wrap justify-center gap-8 mt-8">
-                 {/* Email */}
                  <a 
                    href="mailto:gabrsena@hotmail.com" 
                    className="p-4 rounded-full border border-[#F2F2F2]/10 hover:border-[#B91C1C] hover:bg-[#B91C1C]/10 text-[#F2F2F2] hover:text-[#B91C1C] transition-all duration-300"
@@ -650,7 +628,6 @@ const App: React.FC = () => {
                    <Mail size={28} />
                  </a>
                  
-                 {/* LinkedIn */}
                  <a 
                    href="https://www.linkedin.com/in/gabrielsenas/" 
                    target="_blank" 
@@ -661,7 +638,6 @@ const App: React.FC = () => {
                    <Linkedin size={28} />
                  </a>
 
-                 {/* Behance (Custom SVG for 'Be') */}
                  <a 
                    href="https://www.behance.net/gabrielsenas" 
                    target="_blank" 
@@ -675,7 +651,6 @@ const App: React.FC = () => {
                     </svg>
                  </a>
 
-                 {/* WhatsApp */}
                  <a 
                    href="https://wa.me/5511973759325" 
                    target="_blank" 
@@ -697,7 +672,6 @@ const App: React.FC = () => {
             </RevealOnScroll>
         </div>
 
-        {/* Footer Copyright */}
         <div className="absolute bottom-8 text-center w-full text-[#F2F2F2]/30 text-sm font-light">
           &copy; 2025 Sena. All rights reserved.
         </div>
