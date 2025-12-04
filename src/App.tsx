@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React , {  useState ,  useEffect  } from 'react' ;    
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Menu, X, Mail, Linkedin, ChevronRight, ChevronDown, ChevronLeft } from 'lucide-react';
 
@@ -26,8 +26,7 @@ const DecryptedText = ({ text, className }: { text: string, className?: string }
       setDisplayText(
         text
           .split("")
-          .map((letter, index) => {
-            if (index < iteration) {
+          .map ( ( _ ,  index ) => { // Alterei 'letter' para '_' para ignorar variáveis ​​não utilizadas               if (index < iteration) {
               return text[index];
             }
             return chars[Math.floor(Math.random() * chars.length)];
@@ -49,7 +48,7 @@ const DecryptedText = ({ text, className }: { text: string, className?: string }
 };
 
 const App: React.FC = () => {
-  const activeSectionRef = useRef<HTMLElement>(null);
+    // Removeu activeSectionRef não utilizado
   const [activeSection, setActiveSection] = useState('home');
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
