@@ -538,7 +538,7 @@ const App = () => {
               </h2>
             </RevealOnScroll>
 
-            <RevealOnScroll delay={0.2} className="w-[50%] md:w-[70%]">
+            <RevealOnScroll delay={0.2} className="w-[42%] md:w-[60%]">
                <div className="relative w-full aspect-[3/4] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 ease-in-out group mx-auto">
                   <img 
                     src="https://i.imgur.com/ovtRA8O.jpeg" 
