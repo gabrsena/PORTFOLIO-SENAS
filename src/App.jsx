@@ -264,7 +264,7 @@ const App = () => {
         onClick={() => scrollToSection('home')}
       >
           <img 
-          src="https://i.imgur.com/K3bVnGL.png"
+          src="/logo.png"
           alt="SENA" 
           className="h-[4.42rem] lg:h-[8.84rem] w-auto object-contain transition-all duration-300"
           loading="eager"
