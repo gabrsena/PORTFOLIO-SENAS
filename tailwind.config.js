@@ -2,7 +2,7 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,jsx}",
   ],
   theme: {
     extend: {
@@ -11,6 +11,7 @@ export default {
         sans: ['"Inter"', 'sans-serif'],
         poppins: ['"Poppins"', 'sans-serif'],
         anton: ['"Anton"', 'sans-serif'],
+        'field-gothic': ['"Oswald"', 'sans-serif'],
       },
       colors: {
         nobel: {
