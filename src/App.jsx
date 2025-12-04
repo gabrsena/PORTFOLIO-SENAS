@@ -396,6 +396,7 @@ const App = () => {
         viewport={{ once: false, amount: 0.2 }}
         transition={{ duration: 0.8 }}
       >
+         {/* Solid Background to Hide Parallax Video in this section */}
          <motion.div 
            className="absolute inset-0 bg-[#0D0D0D]/70 -z-10"
            initial={{ opacity: 0 }}
@@ -538,7 +539,7 @@ const App = () => {
               </h2>
             </RevealOnScroll>
 
-            <RevealOnScroll delay={0.2} className="w-[42%] md:w-[60%]">
+            <RevealOnScroll delay={0.2} className="w-[40%] md:w-[60%]">
                <div className="relative w-full aspect-[3/4] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 ease-in-out group mx-auto">
                   <img 
                     src="https://i.imgur.com/ovtRA8O.jpeg" 
