@@ -253,7 +253,7 @@ const App = () => {
           playsInline
           preload="metadata"
           className="absolute inset-0 w-full h-full object-cover opacity-100"
-         src="/portfolio.mp4"
+         src="/portfoliov2.mp4"
         />
         <div className="absolute inset-0 bg-black/40" />
       </motion.div>
