@@ -61,7 +61,7 @@ const projects = [
   {
     title: "Show Match",
     video: "/video show mat.mp4",
-    image: "/video show mat.mp4",
+    image: "https://vimeo.com/manage/videos/1145659774",
   },
   {
     title: "Showreel",
