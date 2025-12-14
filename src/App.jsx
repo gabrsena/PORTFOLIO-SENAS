@@ -315,7 +315,7 @@ const App = () => {
           playsInline
           preload="metadata" // Optimize: Load only metadata initially
           className="absolute inset-0 w-full h-full object-cover opacity-100"
-          src="https://i.imgur.com/BepzB9N.mp4"
+          src="/portfoliov2.mp4"
         />
         <div className="absolute inset-0 bg-black/40" />
       </motion.div>
