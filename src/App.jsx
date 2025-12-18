@@ -6,7 +6,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Menu, X, Mail, Linkedin, ChevronRight, ChevronLeft, ChevronDown, ArrowUp, PenTool, Clapperboard, Film } from 'lucide-react';
-// IMPORTANTE: Importando a biblioteca de Marquee
 import Marquee from 'react-fast-marquee';
 
 // --- Helper Component for Scroll Animations ---
@@ -146,8 +145,8 @@ const App = () => {
   }, []);
 
   // --- Marquee State ---
-  // Controlamos a direção do marquee com as setas
   const [marqueeDirection, setMarqueeDirection] = useState("left");
+  const [isMarqueePaused, setIsMarqueePaused] = useState(false);
 
   // --- Scroll Logic ---
   const { scrollY } = useScroll();
@@ -171,18 +170,15 @@ const App = () => {
     ["blur(0px)", "blur(8px)"]
   );
   
-  // Parallax for Background Video - Subtle movement to add depth
+  // Parallax for Background Video
   const bgParallax = useTransform(scrollY, [0, 5000], [0, -300]);
 
   const scrollToSection = (id) => {
-    // If About is clicked, toggle the modal
     if (id === 'about') {
       setShowAbout(true);
       setMenuOpen(false);
       return;
     }
-
-    // Otherwise close about and scroll
     setShowAbout(false);
     const element = document.getElementById(id);
     if (element) {
@@ -192,7 +188,6 @@ const App = () => {
     }
   };
 
-  // Intersection Observer to detect active section
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -204,10 +199,8 @@ const App = () => {
       },
       { threshold: 0.3 }
     );
-
     const sections = document.querySelectorAll('section');
     sections.forEach((section) => observer.observe(section));
-
     return () => sections.forEach((section) => observer.unobserve(section));
   }, []);
 
@@ -221,7 +214,7 @@ const App = () => {
   return (
     <div className="bg-[#0D0D0D] text-[#F2F2F2] font-sans selection:bg-[#B91C1C] selection:text-white overflow-x-hidden w-full">
       
-      {/* Background Video (Visible Everywhere with Parallax) */}
+      {/* Background Video */}
       <motion.div 
         className="fixed inset-0 z-0"
         style={{ y: bgParallax, scale: 1.25 }}
@@ -231,15 +224,14 @@ const App = () => {
           loop
           muted
           playsInline
-          preload="metadata" // Optimize: Load only metadata initially
+          preload="metadata"
           className="absolute inset-0 w-full h-full object-cover opacity-100"
-          // Mantenha apenas um src correto aqui, removi o duplicado que tinha antes
           src="/portv5.mp4" 
         />
         <div className="absolute inset-0 bg-black/40" />
       </motion.div>
 
-      {/* Logo Container (Fixed) - Moved outside Nav to persist on Mobile Home */}
+      {/* Logo Container */}
       <div 
         className="fixed top-8 left-8 z-[60] cursor-pointer"
         onClick={() => scrollToSection('home')}
@@ -248,7 +240,7 @@ const App = () => {
           src="https://i.imgur.com/K3bVnGL.png"
           alt="SENA" 
           className="h-[4.42rem] lg:h-[8.84rem] w-auto object-contain transition-all duration-300"
-          loading="eager" // Important logo, load immediately
+          loading="eager"
         />
       </div>
 
@@ -264,10 +256,7 @@ const App = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        
-        <div className="flex-1" /> {/* Spacer */}
-
-        {/* Menu Button (Unified for Mobile & Desktop) - Always Visible */}
+        <div className="flex-1" />
         <div className="z-[60]">
           <motion.div
              initial={{ opacity: 1 }}
@@ -305,7 +294,7 @@ const App = () => {
         </div>
       </motion.nav>
 
-      {/* Full Screen Menu Overlay */}
+      {/* Menu Overlay */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -340,15 +329,10 @@ const App = () => {
           viewport={{ once: false }}
           transition={{ duration: 1 }}
         >
-          {/* Main Title Container - Flex Layout */}
           <div className="flex flex-col md:flex-row items-center justify-center gap-0 md:gap-4 font-anton text-4xl md:text-6xl lg:text-7xl uppercase whitespace-nowrap">
-            
-            {/* 1. Static LEFT: "LET ME COOK" */}
             <span className="text-[#F2F2F2]">
               LET ME COOK
             </span>
-
-            {/* 2. Center: "YOUR" - Animates in */}
              <motion.span 
               className="text-[#F2F2F2]"
               initial={{ opacity: 0, x: -20 }}
@@ -357,8 +341,6 @@ const App = () => {
             >
               YOUR
             </motion.span>
-            
-            {/* 3. Right: Red Animated Word */}
             <div className="relative w-[120px] md:w-[200px] h-[1.4em] flex items-center justify-center">
                <AnimatePresence mode="wait">
                 <motion.span
@@ -373,11 +355,8 @@ const App = () => {
                 </motion.span>
               </AnimatePresence>
             </div>
-
           </div>
         </motion.div>
-
-        {/* Scroll Down Indicator */}
         <motion.div 
           className="absolute bottom-10 z-20 cursor-pointer"
           onClick={() => scrollToSection('work')}
@@ -397,7 +376,6 @@ const App = () => {
         viewport={{ once: false, amount: 0.2 }}
         transition={{ duration: 0.8 }}
       >
-         {/* Solid Background to Hide Parallax Video in this section */}
          <motion.div 
            className="absolute inset-0 bg-[#0D0D0D] -z-10" 
            initial={{ opacity: 0 }}
@@ -407,7 +385,6 @@ const App = () => {
 
          {/* --- Part 1: Projects MARQUEE --- */}
          <div className="min-h-screen flex flex-col items-center justify-center py-20">
-             {/* Aumentei para w-full para o marquee ocupar a tela toda se quiser */}
              <div className="w-full flex flex-col gap-12"> 
                 
                 <div className="max-w-7xl w-full mx-auto px-4 md:px-8 flex justify-between items-end">
@@ -424,7 +401,7 @@ const App = () => {
                   {/* Navigation Arrows (Control Direction) */}
                   <button 
                     onClick={() => setMarqueeDirection("right")}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-30 p-2 text-[#F2F2F2]/50 hover:text-[#B91C1C] transition-colors bg-black/40 backdrop-blur-md rounded-r-xl h-24 flex items-center"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 z-50 p-2 text-[#F2F2F2]/50 hover:text-[#B91C1C] transition-colors bg-black/40 backdrop-blur-md rounded-r-xl h-24 flex items-center cursor-pointer hover:bg-black/60"
                     aria-label="Scroll Left"
                   >
                     <ChevronLeft size={40} />
@@ -432,25 +409,29 @@ const App = () => {
 
                   <button 
                     onClick={() => setMarqueeDirection("left")}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-30 p-2 text-[#F2F2F2]/50 hover:text-[#B91C1C] transition-colors bg-black/40 backdrop-blur-md rounded-l-xl h-24 flex items-center"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 z-50 p-2 text-[#F2F2F2]/50 hover:text-[#B91C1C] transition-colors bg-black/40 backdrop-blur-md rounded-l-xl h-24 flex items-center cursor-pointer hover:bg-black/60"
                     aria-label="Scroll Right"
                   >
                     <ChevronRight size={40} />
                   </button>
                   
                   {/* React Fast Marquee */}
-                  <div className="w-full h-full">
+                  {/* Removemos pauseOnHover daqui para não travar nas setas. Usamos o play controlado. */}
+                  <div className="w-full h-full z-10">
                     <Marquee 
                       gradient={false} 
                       speed={50} 
-                      pauseOnHover={true} 
+                      play={!isMarqueePaused}
+                      pauseOnHover={false} 
                       direction={marqueeDirection}
                       className="h-full items-center overflow-y-hidden"
                     >
                       {projects.map((project, index) => (
                         <div 
                           key={index} 
-                          // Definimos uma largura fixa para os cards dentro do marquee e margem lateral
+                          // Controle de pausa individual no card
+                          onMouseEnter={() => setIsMarqueePaused(true)}
+                          onMouseLeave={() => setIsMarqueePaused(false)}
                           className="relative h-[50vh] md:h-[60vh] aspect-[9/16] mx-4 md:mx-6 bg-[#161616] overflow-hidden shadow-2xl cursor-pointer group"
                           onClick={() => window.open('https://vimeo.com/senascreative', '_blank')}
                         >
@@ -578,8 +559,6 @@ const App = () => {
          </div>
       </motion.section>
 
-      {/* About Section Removed from Flow */}
-
       {/* --- CONTACT SECTION --- */}
       <motion.section 
         id="contact" 
@@ -612,7 +591,6 @@ const App = () => {
 
             <RevealOnScroll delay={0.4}>
               <div className="flex flex-wrap justify-center gap-8 mt-8">
-                  {/* Email */}
                   <a 
                     href="mailto:gabrsena@hotmail.com" 
                     className="p-4 rounded-full border border-[#F2F2F2]/10 hover:border-[#B91C1C] hover:bg-[#B91C1C]/10 text-[#F2F2F2] hover:text-[#B91C1C] transition-all duration-300"
@@ -621,7 +599,6 @@ const App = () => {
                     <Mail size={28} />
                   </a>
                   
-                  {/* LinkedIn */}
                   <a 
                     href="https://www.linkedin.com/in/gabrielsenas/" 
                     target="_blank" 
@@ -653,13 +630,11 @@ const App = () => {
             </RevealOnScroll>
         </div>
 
-        {/* Footer Copyright */}
         <div className="absolute bottom-8 text-center w-full text-[#F2F2F2]/30 text-sm font-light">
           &copy; 2025 Sena. All rights reserved.
         </div>
       </motion.section>
 
-      {/* --- ABOUT MODAL (Only visible on click) --- */}
       <AnimatePresence>
         {showAbout && (
           <motion.div
@@ -669,7 +644,6 @@ const App = () => {
             transition={{ duration: 0.5 }}
             className="fixed inset-0 z-[100] bg-[#0D0D0D] overflow-y-auto"
           >
-             {/* Close Button */}
              <button 
                 onClick={() => setShowAbout(false)}
                 className="fixed top-8 right-8 z-[110] text-[#F2F2F2] hover:text-[#B91C1C] transition-colors"
@@ -680,8 +654,6 @@ const App = () => {
 
             <div className="min-h-screen flex items-center justify-center py-20 px-8">
                <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                
-                {/* Left Column: Title & Photo */}
                 <div className="flex flex-col gap-8 items-center md:items-start">
                   <motion.div
                     initial={{ y: 20, opacity: 0 }}
@@ -712,7 +684,6 @@ const App = () => {
                   </motion.div>
                 </div>
 
-                {/* Right Column: Bio Text */}
                 <div className="flex flex-col gap-6 text-lg md:text-xl font-light leading-relaxed text-[#F2F2F2]/80">
                   <motion.div 
                     initial={{ y: 20, opacity: 0 }}
@@ -764,7 +735,6 @@ const App = () => {
         )}
       </AnimatePresence>
 
-      {/* --- BACK TO HOME BUTTON --- */}
       <AnimatePresence>
         {showScrollTop && !showAbout && (
            <motion.button
