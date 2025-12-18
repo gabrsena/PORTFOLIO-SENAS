@@ -10,11 +10,15 @@ import {
   useTransform, 
   useMotionValue, 
   useAnimationFrame, 
-  useSpring,
-  useVelocity,
-  wrap
+  useSpring
 } from 'framer-motion';
 import { Menu, X, Mail, Linkedin, ChevronRight, ChevronLeft, ChevronDown, ArrowUp, PenTool, Clapperboard, Film } from 'lucide-react';
+
+// --- Função Wrap Manual (Para evitar erros de importação) ---
+const wrap = (min, max, v) => {
+  const rangeSize = max - min;
+  return ((((v - min) % rangeSize) + rangeSize) % rangeSize) + min;
+};
 
 // --- Helper Component for Scroll Animations ---
 const RevealOnScroll = ({ children, delay = 0, className = "" }) => (
@@ -101,7 +105,7 @@ const originalProjects = [
   }
 ];
 
-// Duplicate projects to ensure smooth infinite loop
+// Duplicamos 4 vezes para garantir que a tela esteja sempre cheia e o loop funcione
 const projects = [...originalProjects, ...originalProjects, ...originalProjects, ...originalProjects];
 
 const App = () => {
@@ -150,53 +154,55 @@ const App = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // --- INFINITE SCROLL LOGIC (Physics Based) ---
-  // Base velocity (negative = left, positive = right)
-  const baseVelocity = -0.5; // Velocidade padrão lenta
-  const x = useMotionValue(0);
+  // --- INFINITE SCROLL LOGIC (Physics Based & Bulletproof) ---
+  const baseX = useMotionValue(0);
+  const scrollVelocity = useMotionValue(-0.5); // Velocidade base constante
+  const smoothVelocity = useSpring(scrollVelocity, { damping: 50, stiffness: 400 });
+  const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 5], { clamp: false });
+
+  // Transforma o valor X linear em uma porcentagem que reseta (-25% a 0% pois temos 4 cópias)
+  // Usamos -25% porque se temos 4 cópias, 25% é o tamanho de 1 cópia inteira.
+  const x = useTransform(baseX, (v) => `${wrap(-25, 0, v)}%`);
+
+  const directionFactor = useRef(1);
   
-  // Fator de velocidade extra (Burst)
-  const velocityFactor = useMotionValue(1); 
-  const smoothVelocity = useSpring(velocityFactor, { damping: 15, stiffness: 200 }); // Suaviza a mudança de velocidade
-
-  // Controle de Blur baseado na velocidade atual
-  const blurAmount = useTransform(smoothVelocity, [1, 8], [0, 10]); // Se velocidade for 1x -> blur 0. Se 8x -> blur 10px
-  const blurFilter = useTransform(blurAmount, (v) => `blur(${v}px)`);
-
-  const containerRef = useRef(null);
-
-  useAnimationFrame((t, delta) => {
-    let moveBy = baseVelocity * (delta / 1000) * 100; // Move proportional to delta time
-    
-    // Apply velocity factor (Speed Boost)
-    moveBy *= smoothVelocity.get();
-
-    // Direction handling controlled by velocity sign
-    
-    // Update X position
-    x.set(x.get() + moveBy);
+  // Controle de Blur baseado na velocidade (Impulso)
+  const blurAmount = useTransform(smoothVelocity, [-8, 8], [10, 10]); 
+  // Pequeno truque: se a velocidade for normal (-0.5), blur é quase 0. Se for rápido (-8), blur é 10.
+  const blurFilter = useTransform(blurAmount, (v) => {
+     const blur = Math.max(0, v - 1); // Remove blur em baixa velocidade
+     return `blur(${blur}px)`;
   });
 
-  // Função para dar o impulso
-  const handleBurst = (direction) => {
-    // direction: 'left' (forward) or 'right' (rewind)
+  useAnimationFrame((t, delta) => {
+    // Move o X baseado na velocidade atual
+    let moveBy = directionFactor.current * -0.5 * (delta / 1000) * 100; // Velocidade base calculada pelo tempo
     
-    // Definimos o alvo da velocidade
-    const targetFactor = direction === 'left' ? 8 : -8; // 8x mais rápido
+    // Se tivermos um impulso (velocidade alta no spring), adicionamos ao movimento
+    if (Math.abs(smoothVelocity.get()) > 0.5) {
+       moveBy = directionFactor.current * smoothVelocity.get() * (delta / 1000) * 20; 
+    }
     
-    velocityFactor.set(targetFactor);
+    baseX.set(baseX.get() + moveBy);
+  });
 
-    // Depois de um tempo, volta ao normal
+  // Função para dar o impulso (Burst)
+  const handleBurst = (direction) => {
+    // direction: 'left' (avança) ou 'right' (volta)
+    
+    // Define a direção do movimento
+    directionFactor.current = direction === 'left' ? 1 : -1;
+    
+    // Injeta velocidade no sistema (o Spring vai suavizar isso)
+    scrollVelocity.set(direction === 'left' ? -15 : 15); // Aumente 15 para mais rápido
+
+    // Depois de um tempo, tira a "injeção" de velocidade para o atrito parar
     setTimeout(() => {
-       velocityFactor.set(1); // Volta para velocidade 1x e direção normal (esquerda)
-    }, 800);
+       scrollVelocity.set(-0.5); // Volta para a velocidade de cruzeiro (lenta e constante)
+       directionFactor.current = 1; // Sempre volta a fluir para a esquerda
+    }, 200); // Impulso curto e forte
   };
 
-  // Wrap logic to make it infinite
-  // We transform the linear 'x' into a wrapped '%' value using CSS in the render
-  // Actually, we use framer-motion's transform for precise loop
-  const xInput = [-100, 0, 100];
-  
   // --- Scroll Logic ---
   const { scrollY } = useScroll();
   useEffect(() => {
@@ -434,40 +440,29 @@ const App = () => {
                 {/* Scroller Container */}
                 <div className="relative w-full h-[60vh] md:h-[70vh] flex items-center group/carousel">
                   
-                  {/* Left Arrow */}
+                  {/* Left Arrow - Rewind */}
                   <button 
                     onClick={() => handleBurst("right")}
                     className="absolute left-0 top-1/2 -translate-y-1/2 z-50 p-2 text-[#F2F2F2]/50 hover:text-[#B91C1C] transition-colors bg-black/40 backdrop-blur-md rounded-r-xl h-24 flex items-center cursor-pointer hover:bg-black/60 active:scale-95 active:bg-[#B91C1C]/20"
+                    aria-label="Rewind"
                   >
                     <ChevronLeft size={40} />
                   </button>
 
-                  {/* Right Arrow */}
+                  {/* Right Arrow - Fast Forward */}
                   <button 
                     onClick={() => handleBurst("left")}
                     className="absolute right-0 top-1/2 -translate-y-1/2 z-50 p-2 text-[#F2F2F2]/50 hover:text-[#B91C1C] transition-colors bg-black/40 backdrop-blur-md rounded-l-xl h-24 flex items-center cursor-pointer hover:bg-black/60 active:scale-95 active:bg-[#B91C1C]/20"
+                    aria-label="Fast Forward"
                   >
                     <ChevronRight size={40} />
                   </button>
                   
-                  {/* Track */}
-                  <div className="w-full overflow-hidden flex items-center" ref={containerRef}>
+                  {/* Track - Infinite Loop */}
+                  <div className="w-full overflow-hidden flex items-center">
                     <motion.div 
                       className="flex gap-4 md:gap-6 px-4"
-                      style={{ x }}
-                      onUpdate={(latest) => {
-                         // Lógica de Loop Infinito Manual (Teleporte)
-                         // Se moveu muito para a esquerda, reseta para a direita (e vice versa) para parecer infinito
-                         const contentWidth = projects.length * 300; // Estimativa
-                         // Em um cenário real perfeito, usariamos offsetWidth, mas vamos simplificar pelo wrap visual
-                         // Se x for muito negativo, soma. Se muito positivo, subtrai.
-                         // Nota: A lógica de loop perfeito com Framer motion manual requer cálculo exato da largura dos items.
-                         // Como seus items são responsivos (vh/vw), usamos uma aproximação visual duplicando items 4x.
-                         // Quando chegar no fim visual, a gente torce pro usuario não perceber ou implementamos 'wrap'.
-                         // Implementando wrap básico:
-                         const width = 20000; // Largura virtual grande
-                         // Aqui estamos confiando na lista gigante de items (4x projects)
-                      }}
+                      style={{ x }} // Movimento infinito
                     >
                       {projects.map((project, index) => (
                         <div 
@@ -504,9 +499,13 @@ const App = () => {
                              {/* Overlay Info */}
                              <div className={`absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100`}>
                                 <h3 className="text-3xl font-anton uppercase mb-1 text-[#F2F2F2] drop-shadow-lg opacity-60 group-hover:opacity-100 transition-opacity duration-300">{project.title}</h3>
+                                
+                                {/* View Project Button */}
                                  <div className="mt-4 overflow-hidden">
                                     <button 
                                       className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[#B91C1C] opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 focus:opacity-100 focus:translate-y-0 focus:outline-none hover:scale-110 hover:text-[#ff4d4d] origin-left"
+                                      aria-label={`View project: ${project.title}`}
+                                      title="View Project"
                                     >
                                       View Project <ChevronRight size={16} />
                                     </button>
