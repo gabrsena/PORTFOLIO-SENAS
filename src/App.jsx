@@ -144,9 +144,31 @@ const App = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // --- Marquee State ---
+  // --- Marquee Controls (Speed & Direction) ---
   const [marqueeDirection, setMarqueeDirection] = useState("left");
+  const [marqueeSpeed, setMarqueeSpeed] = useState(50); // Velocidade normal
   const [isMarqueePaused, setIsMarqueePaused] = useState(false);
+
+  // Função para avançar rápido (Fast Forward)
+  const handleFastForward = (isPressed) => {
+    if (isPressed) {
+      setMarqueeDirection("left"); // Garante direção correta
+      setMarqueeSpeed(200); // Velocidade Turbo
+    } else {
+      setMarqueeSpeed(50); // Volta ao normal
+    }
+  };
+
+  // Função para rebobinar (Rewind)
+  const handleRewind = (isPressed) => {
+    if (isPressed) {
+      setMarqueeDirection("right"); // Inverte para voltar
+      setMarqueeSpeed(200); // Velocidade Turbo
+    } else {
+      setMarqueeDirection("left"); // Volta a fluir para frente
+      setMarqueeSpeed(50);
+    }
+  };
 
   // --- Scroll Logic ---
   const { scrollY } = useScroll();
@@ -154,7 +176,6 @@ const App = () => {
   // Update ShowScrollTop state based on scroll position
   useEffect(() => {
     return scrollY.on('change', (latest) => {
-      // Show button if scrolled down more than 50% of the screen height
       setShowScrollTop(latest > window.innerHeight * 0.5);
     });
   }, [scrollY]);
@@ -398,29 +419,35 @@ const App = () => {
                 {/* Marquee Container with Navigation */}
                 <div className="relative w-full h-[60vh] md:h-[70vh] flex items-center">
                   
-                  {/* Navigation Arrows (Control Direction) */}
+                  {/* Left Arrow - Rewind (Hold to reverse speed) */}
                   <button 
-                    onClick={() => setMarqueeDirection("right")}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-50 p-2 text-[#F2F2F2]/50 hover:text-[#B91C1C] transition-colors bg-black/40 backdrop-blur-md rounded-r-xl h-24 flex items-center cursor-pointer hover:bg-black/60"
-                    aria-label="Scroll Left"
+                    onMouseDown={() => handleRewind(true)}
+                    onMouseUp={() => handleRewind(false)}
+                    onTouchStart={() => handleRewind(true)}
+                    onTouchEnd={() => handleRewind(false)}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 z-50 p-2 text-[#F2F2F2]/50 hover:text-[#B91C1C] transition-colors bg-black/40 backdrop-blur-md rounded-r-xl h-24 flex items-center cursor-pointer hover:bg-black/60 active:scale-95"
+                    aria-label="Rewind"
                   >
                     <ChevronLeft size={40} />
                   </button>
 
+                  {/* Right Arrow - Fast Forward (Hold to speed up) */}
                   <button 
-                    onClick={() => setMarqueeDirection("left")}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-50 p-2 text-[#F2F2F2]/50 hover:text-[#B91C1C] transition-colors bg-black/40 backdrop-blur-md rounded-l-xl h-24 flex items-center cursor-pointer hover:bg-black/60"
-                    aria-label="Scroll Right"
+                    onMouseDown={() => handleFastForward(true)}
+                    onMouseUp={() => handleFastForward(false)}
+                    onTouchStart={() => handleFastForward(true)}
+                    onTouchEnd={() => handleFastForward(false)}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 z-50 p-2 text-[#F2F2F2]/50 hover:text-[#B91C1C] transition-colors bg-black/40 backdrop-blur-md rounded-l-xl h-24 flex items-center cursor-pointer hover:bg-black/60 active:scale-95"
+                    aria-label="Fast Forward"
                   >
                     <ChevronRight size={40} />
                   </button>
                   
                   {/* React Fast Marquee */}
-                  {/* Removemos pauseOnHover daqui para não travar nas setas. Usamos o play controlado. */}
                   <div className="w-full h-full z-10">
                     <Marquee 
                       gradient={false} 
-                      speed={50} 
+                      speed={marqueeSpeed} 
                       play={!isMarqueePaused}
                       pauseOnHover={false} 
                       direction={marqueeDirection}
