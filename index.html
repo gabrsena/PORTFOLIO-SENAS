@@ -2,30 +2,72 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="https://i.imgur.com/K3bVnGL.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sena</title>
+    <title>Sena | Creative Director</title>
+    <link rel="icon" type="image/png" href="https://i.imgur.com/K3bVnGL.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Poppins:wght@400;700&family=Anton&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              serif: ['"Playfair Display"', 'serif'],
+              sans: ['"Inter"', 'sans-serif'],
+              poppins: ['"Poppins"', 'sans-serif'],
+              anton: ['"Anton"', 'sans-serif'],
+            },
+            colors: {
+              nobel: {
+                gold: '#B91C1C', 
+                dark: '#1a1a1a',
+                cream: '#F9F8F4',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 100px;
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+      }
+      /* Hide scrollbar for Chrome, Safari and Opera */
+      ::-webkit-scrollbar {
+        display: none;
+      }
+      body {
+        background-color: #0D0D0D;
+        color: #F2F2F2;
+      }
+      @media print {
+        nav, footer, button {
+          display: none !important;
+        }
+      }
+    </style>
   <script type="importmap">
 {
   "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.1",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
-    "react/": "https://aistudiocdn.com/react@^19.2.1/",
-    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.25",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
-    "vite": "https://aistudiocdn.com/vite@^7.2.6",
-    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1"
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@react-three/fiber": "https://aistudiocdn.com/@react-three/fiber@^9.4.0",
+    "@react-three/drei": "https://aistudiocdn.com/@react-three/drei@^10.7.7",
+    "three": "https://aistudiocdn.com/three@^0.181.1",
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.24",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.553.0",
+    "react-fast-marquee": "https://esm.sh/react-fast-marquee@1.6.5?external=react"
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
 </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  <script type="module" src="/src/index.jsx"></script>
-</body>
+  </body>
 </html>
