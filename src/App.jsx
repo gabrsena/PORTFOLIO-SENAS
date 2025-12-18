@@ -21,7 +21,7 @@ const RevealOnScroll = ({ children, delay = 0, className = "", zoom = false }) =
   </motion.div>
 );
 
-// --- Project Card Component with Advanced Interactions ---
+// --- Project Card Component (Clean 3D Tilt, No Gradients) ---
 const ProjectCard = ({ project }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -31,11 +31,6 @@ const ProjectCard = ({ project }) => {
 
   const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
-  
-  const bg1X = useTransform(mouseXSpring, [-0.5, 0.5], ["10%", "90%"]);
-  const bg1Y = useTransform(mouseYSpring, [-0.5, 0.5], ["10%", "90%"]);
-  const bg2X = useTransform(mouseXSpring, [-0.5, 0.5], ["90%", "10%"]);
-  const bg2Y = useTransform(mouseYSpring, [-0.5, 0.5], ["90%", "10%"]);
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -47,9 +42,6 @@ const ProjectCard = ({ project }) => {
     const yPct = mouseY / height - 0.5;
     x.set(xPct);
     y.set(yPct);
-    
-    e.currentTarget.style.setProperty('--mouse-x', `${(mouseX / width) * 100}%`);
-    e.currentTarget.style.setProperty('--mouse-y', `${(mouseY / height) * 100}%`);
   };
 
   const handleMouseLeave = () => {
@@ -69,46 +61,12 @@ const ProjectCard = ({ project }) => {
       className="relative flex-shrink-0 h-[50vh] md:h-[60vh] aspect-[9/16] mx-4 md:mx-6 bg-[#111] overflow-hidden shadow-2xl cursor-pointer group rounded-sm border border-white/5"
       onClick={() => window.open('https://vimeo.com/senascreative', '_blank')}
     >
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-30 pointer-events-none">
-        <div className="absolute inset-0 border-[2px] border-white/15 blur-[1px]" />
+      {/* Borda sutil */}
+      <div className="absolute inset-0 pointer-events-none z-30 opacity-50">
+        <div className="absolute inset-0 border border-white/10" />
       </div>
 
-      <div 
-        className="absolute inset-0 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.07) 0%, rgba(13, 13, 13, 0) 70%)'
-        }}
-      />
-
-      <motion.div 
-        className="absolute inset-0 opacity-30 group-hover:opacity-60 transition-opacity duration-700 -z-5"
-        style={{
-          background: useTransform(
-            [bg1X, bg1Y, bg2X, bg2Y],
-            ([x1, y1, x2, y2]) => 
-              `radial-gradient(circle at ${x1} ${y1}, rgba(185, 28, 28, 0.15) 0%, transparent 50%), 
-               radial-gradient(circle at ${x2} ${y2}, rgba(255, 255, 255, 0.05) 0%, transparent 60%)`
-          )
-        }}
-      />
-
-      <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity">
-        <motion.div 
-          animate={{ y: ["-100%", "200%"] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="w-full h-[2px] bg-white/20 blur-[2px] shadow-[0_0_10px_white]"
-        />
-      </div>
-      
-      <motion.div 
-        className="absolute inset-0 bg-gradient-to-tr from-white/5 via-transparent to-white/5"
-        animate={{
-          opacity: [0.1, 0.3, 0.1],
-          scale: [1, 1.05, 1],
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-      />
-
+      {/* Conteúdo do Vídeo */}
       <motion.div 
         style={{ transformStyle: "preserve-3d" }}
         className="relative z-10 w-full h-full"
@@ -120,6 +78,7 @@ const ProjectCard = ({ project }) => {
         />
       </motion.div>
       
+      {/* Overlay de Texto */}
       <motion.div 
         style={{ transform: "translateZ(50px)" }}
         className="absolute inset-0 z-40 flex flex-col justify-end p-6 bg-gradient-to-t from-black/95 via-black/30 to-transparent"
@@ -137,59 +96,23 @@ const ProjectCard = ({ project }) => {
   );
 };
 
-// --- Service Card Component with Interactive Background ---
+// --- Service Card Component (Clean, No Mouse Tracking, Video Fade-in Only) ---
 const ServiceCard = ({ service }) => {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
-  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
-  
-  const bg1X = useTransform(mouseXSpring, [-0.5, 0.5], ["15%", "85%"]);
-  const bg1Y = useTransform(mouseYSpring, [-0.5, 0.5], ["15%", "85%"]);
-  const bg2X = useTransform(mouseXSpring, [-0.5, 0.5], ["85%", "15%"]);
-  const bg2Y = useTransform(mouseYSpring, [-0.5, 0.5], ["85%", "15%"]);
-
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    const xPct = mouseX / rect.width - 0.5;
-    const yPct = mouseY / rect.height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
   return (
-    <motion.div 
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="group relative h-[360px] md:h-[420px] flex flex-col justify-between p-8 border border-[#F2F2F2]/10 hover:border-[#B91C1C] transition-all duration-500 overflow-hidden cursor-default"
-    >
-      <video src={service.videoUrl} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-700 -z-10" />
+    <div className="group relative h-[360px] md:h-[420px] flex flex-col justify-between p-8 border border-[#F2F2F2]/10 hover:border-[#B91C1C] transition-all duration-500 overflow-hidden cursor-default bg-[#111]">
       
-      <motion.div 
-        className="absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-500 -z-5"
-        style={{
-          background: useTransform(
-            [bg1X, bg1Y, bg2X, bg2Y],
-            ([x1, y1, x2, y2]) => 
-              `radial-gradient(circle at ${x1} ${y1}, rgba(185, 28, 28, 0.2) 0%, transparent 50%), 
-               radial-gradient(circle at ${x2} ${y2}, rgba(255, 255, 255, 0.1) 0%, transparent 60%)`
-          )
-        }}
+      {/* VÍDEO: Aparece suavemente no Hover */}
+      <video 
+        src={service.videoUrl} 
+        autoPlay loop muted playsInline 
+        className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-60 transition-opacity duration-700 -z-10" 
       />
       
-      <div className="absolute inset-0 bg-black/70 group-hover:bg-black/50 transition-colors duration-700 -z-10" />
+      {/* Overlay Fundo Escuro */}
+      <div className="absolute inset-0 bg-black transition-colors duration-700 -z-20" />
       
       <div className="relative z-10 flex justify-center items-start pt-4">
         <div className="relative px-4 py-2">
-          {/* Ícones Estáticos */}
           <div className="text-[#B91C1C]">
             {service.icon}
           </div>
@@ -204,7 +127,7 @@ const ServiceCard = ({ service }) => {
           {service.desc}
         </p>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -295,7 +218,6 @@ const App = () => {
     });
   }, [scrollY]);
 
-  // Barra de navegação transparente (sem hooks de cor)
   const bgParallax = useTransform(scrollY, [0, 5000], [0, -300]);
   const logoScale = useTransform(scrollY, [0, 300], [1, 0.9]);
 
