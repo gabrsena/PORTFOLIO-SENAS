@@ -21,7 +21,7 @@ const RevealOnScroll = ({ children, delay = 0, className = "", zoom = false }) =
   </motion.div>
 );
 
-// --- Project Card Component (Clean 3D Tilt, No Gradients) ---
+// --- Project Card Component ---
 const ProjectCard = ({ project }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -61,24 +61,19 @@ const ProjectCard = ({ project }) => {
       className="relative flex-shrink-0 h-[50vh] md:h-[60vh] aspect-[9/16] mx-4 md:mx-6 bg-[#111] overflow-hidden shadow-2xl cursor-pointer group rounded-sm border border-white/5"
       onClick={() => window.open('https://vimeo.com/senascreative', '_blank')}
     >
-      {/* Borda sutil */}
-      <div className="absolute inset-0 pointer-events-none z-30 opacity-50">
-        <div className="absolute inset-0 border border-white/10" />
-      </div>
+      <div className="absolute inset-0 border border-white/10 pointer-events-none z-30 opacity-50" />
 
-      {/* Conteúdo do Vídeo */}
       <motion.div 
         style={{ transformStyle: "preserve-3d" }}
         className="relative z-10 w-full h-full"
       >
         <video 
           src={project.video} 
-          autoPlay loop muted playsInline preload="none" 
+          autoPlay loop muted playsInline preload="metadata" 
           className="w-full h-full object-cover opacity-80 group-hover:opacity-90 transition-opacity duration-500 scale-100 group-hover:scale-110 transition-transform duration-700" 
         />
       </motion.div>
       
-      {/* Overlay de Texto */}
       <motion.div 
         style={{ transform: "translateZ(50px)" }}
         className="absolute inset-0 z-40 flex flex-col justify-end p-6 bg-gradient-to-t from-black/95 via-black/30 to-transparent"
@@ -96,22 +91,31 @@ const ProjectCard = ({ project }) => {
   );
 };
 
-// --- Service Card Component (Clean, No Mouse Tracking, Video Fade-in Only) ---
+// --- Service Card Component (CORRIGIDO: Z-INDEX + VISIBILIDADE) ---
 const ServiceCard = ({ service }) => {
   return (
     <div className="group relative h-[360px] md:h-[420px] flex flex-col justify-between p-8 border border-[#F2F2F2]/10 hover:border-[#B91C1C] transition-all duration-500 overflow-hidden cursor-default bg-[#111]">
       
-      {/* VÍDEO: Aparece suavemente no Hover */}
+      {/* VÍDEO: 
+         - z-0: Fica acima do fundo #111, mas abaixo do texto.
+         - opacity-0: Invisível por padrão.
+         - group-hover:opacity-100: Visível no hover.
+      */}
       <video 
         src={service.videoUrl} 
-        autoPlay loop muted playsInline 
-        className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-60 transition-opacity duration-700 -z-10" 
+        autoPlay 
+        loop 
+        muted 
+        playsInline
+        preload="auto" 
+        className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-0" 
       />
       
-      {/* Overlay Fundo Escuro */}
-      <div className="absolute inset-0 bg-black transition-colors duration-700 -z-20" />
+      {/* Overlay Escuro para leitura (Aparece junto com o vídeo) */}
+      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-10" />
       
-      <div className="relative z-10 flex justify-center items-start pt-4">
+      {/* CONTEÚDO (Texto/Ícone): z-20 para ficar sempre no topo */}
+      <div className="relative z-20 flex justify-center items-start pt-4">
         <div className="relative px-4 py-2">
           <div className="text-[#B91C1C]">
             {service.icon}
@@ -119,7 +123,7 @@ const ServiceCard = ({ service }) => {
         </div>
       </div>
       
-      <div className="relative z-10 flex flex-col gap-4 items-center text-center">
+      <div className="relative z-20 flex flex-col gap-4 items-center text-center">
         <h3 className="text-3xl font-anton uppercase text-[#F2F2F2] group-hover:text-[#B91C1C] transition-colors duration-500">
           {service.title}
         </h3>
@@ -273,7 +277,6 @@ const App = () => {
          <img src="https://i.imgur.com/cipVI2g.png" alt="SENA" className="h-[3.54rem] lg:h-[4.33rem] w-auto object-contain transition-all duration-300" />
       </motion.div>
 
-      {/* --- BARRA DE NAVEGAÇÃO 100% TRANSPARENTE --- */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center py-4 px-8 h-[calc(3.54rem+2rem)] lg:h-[calc(4.33rem+2rem)]">
         <div className="flex-1" />
         <div className="z-[60]">
