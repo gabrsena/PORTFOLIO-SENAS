@@ -4,7 +4,8 @@
 */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+// ADICIONADO: useMotionValue e animate para controlar o blur
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, animate } from 'framer-motion';
 import { Menu, X, Mail, Linkedin, ChevronRight, ChevronLeft, ChevronDown, ArrowUp, PenTool, Clapperboard, Film } from 'lucide-react';
 import Marquee from 'react-fast-marquee';
 
@@ -99,8 +100,6 @@ const App = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  
-  // New state for About Modal
   const [showAbout, setShowAbout] = useState(false);
   
   // --- Dynamic Title Animation State (Home) ---
@@ -116,17 +115,14 @@ const App = () => {
 
   useEffect(() => {
     let intervalId;
-
     const tick = () => {
       setWordIndex((prev) => (prev + 1) % animatedWords.length);
     };
-
     if (isFastPhase) {
       intervalId = setInterval(tick, 80);
     } else {
-      intervalId = setInterval(tick, 1000); // 1s per word after fast phase
+      intervalId = setInterval(tick, 1000);
     }
-
     return () => clearInterval(intervalId);
   }, [isFastPhase]);
 
@@ -144,52 +140,45 @@ const App = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // --- Marquee Controls (Speed & Direction) ---
+  // --- Marquee Controls (Speed, Direction & MOTION BLUR) ---
   const [marqueeDirection, setMarqueeDirection] = useState("left");
-  const [marqueeSpeed, setMarqueeSpeed] = useState(50); // Velocidade normal
+  const [marqueeSpeed, setMarqueeSpeed] = useState(50);
   const [isMarqueePaused, setIsMarqueePaused] = useState(false);
-  
-  // Ref para controlar o tempo do impulso
   const burstTimeout = useRef(null);
 
-  // Função de Impulso (Burst)
+  // NOVO: Motion Value para controlar a intensidade do blur (0 a 10px)
+  const blurAmount = useMotionValue(0);
+  // Transforma o valor numérico em uma string de filtro CSS
+  const blurFilter = useTransform(blurAmount, [0, 10], ["blur(0px)", "blur(8px)"]);
+
+  // Função de Impulso (Burst) com Motion Blur
   const handleSpeedBurst = (direction) => {
-    // 1. Limpa qualquer timer anterior para não bugar se clicar rápido
     if (burstTimeout.current) clearTimeout(burstTimeout.current);
 
-    // 2. Define a direção desejada e a velocidade turbo
     setMarqueeDirection(direction);
-    setMarqueeSpeed(250); // Velocidade do impulso (ajuste se quiser mais rápido)
+    setMarqueeSpeed(300); // Aumentei um pouco a velocidade do impulso
 
-    // 3. Define o timer para voltar ao normal depois de 1 segundo
+    // Anima o blur aumentando rapidamente para 8px
+    animate(blurAmount, 8, { duration: 0.3, ease: "easeOut" });
+
     burstTimeout.current = setTimeout(() => {
-        setMarqueeDirection("left"); // Sempre volta a fluir para a esquerda (natural)
-        setMarqueeSpeed(50); // Volta velocidade normal
-    }, 1000); // Duração do impulso em ms
+        setMarqueeDirection("left");
+        setMarqueeSpeed(50); 
+        // Anima o blur diminuindo suavemente de volta a 0px
+        animate(blurAmount, 0, { duration: 0.6, ease: "easeInOut" });
+    }, 800); // Tempo do impulso
   };
 
   // --- Scroll Logic ---
   const { scrollY } = useScroll();
-  
-  // Update ShowScrollTop state based on scroll position
   useEffect(() => {
     return scrollY.on('change', (latest) => {
       setShowScrollTop(latest > window.innerHeight * 0.5);
     });
   }, [scrollY]);
 
-  const navBackground = useTransform(
-    scrollY,
-    [0, 100],
-    ["rgba(13,13,13,0)", "rgba(13,13,13,0.6)"]
-  );
-  const navBackdropBlur = useTransform(
-    scrollY,
-    [0, 100],
-    ["blur(0px)", "blur(8px)"]
-  );
-  
-  // Parallax for Background Video
+  const navBackground = useTransform(scrollY, [0, 100], ["rgba(13,13,13,0)", "rgba(13,13,13,0.6)"]);
+  const navBackdropBlur = useTransform(scrollY, [0, 100], ["blur(0px)", "blur(8px)"]);
   const bgParallax = useTransform(scrollY, [0, 5000], [0, -300]);
 
   const scrollToSection = (id) => {
@@ -454,28 +443,33 @@ const App = () => {
                           className="relative h-[50vh] md:h-[60vh] aspect-[9/16] mx-4 md:mx-6 bg-[#161616] overflow-hidden shadow-2xl cursor-pointer group"
                           onClick={() => window.open('https://vimeo.com/senascreative', '_blank')}
                         >
-                             {/* Content: Video or Image */}
-                             {project.video ? (
-                                <video 
-                                  src={project.video}
-                                  autoPlay
-                                  loop
-                                  muted
-                                  playsInline
-                                  preload="none"
-                                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 scale-100 group-hover:scale-105 transition-transform duration-700"
-                                />
-                             ) : (
-                                <img 
-                                  src={project.image} 
-                                  alt={project.title}
-                                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
-                                  loading="lazy"
-                                  decoding="async"
-                                />
-                             )}
+                             {/* NOVO: Container da Mídia com Motion Blur dinâmico */}
+                             <motion.div 
+                                style={{ filter: blurFilter }} // Aplica o blur aqui
+                                className="w-full h-full"
+                             >
+                                 {project.video ? (
+                                    <video 
+                                      src={project.video}
+                                      autoPlay
+                                      loop
+                                      muted
+                                      playsInline
+                                      preload="none"
+                                      className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 scale-100 group-hover:scale-105 transition-transform duration-700"
+                                    />
+                                 ) : (
+                                    <img 
+                                      src={project.image} 
+                                      alt={project.title}
+                                      className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                                      loading="lazy"
+                                      decoding="async"
+                                    />
+                                 )}
+                             </motion.div>
                              
-                             {/* Overlay Info */}
+                             {/* Overlay Info (FORA do blur) */}
                              <div className={`absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100`}>
                                 <h3 className="text-3xl font-anton uppercase mb-1 text-[#F2F2F2] drop-shadow-lg opacity-60 group-hover:opacity-100 transition-opacity duration-300">{project.title}</h3>
                                 
@@ -751,22 +745,6 @@ const App = () => {
               </div>
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showScrollTop && !showAbout && (
-           <motion.button
-             initial={{ opacity: 0, scale: 0 }}
-             animate={{ opacity: 1, scale: 1 }}
-             exit={{ opacity: 0, scale: 0 }}
-             transition={{ duration: 0.3 }}
-             onClick={() => scrollToSection('home')}
-             className="fixed bottom-8 right-8 z-50 p-4 bg-[#F2F2F2]/5 backdrop-blur-sm border border-[#F2F2F2]/10 text-[#F2F2F2]/40 rounded-full shadow-lg hover:text-[#B91C1C] hover:border-[#B91C1C]/50 hover:bg-[#B91C1C]/10 hover:scale-110 transition-all duration-300 focus:outline-none"
-             aria-label="Back to Home"
-           >
-             <ArrowUp size={24} />
-           </motion.button>
         )}
       </AnimatePresence>
       
