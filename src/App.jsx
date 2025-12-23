@@ -170,7 +170,7 @@ const DecryptedText = ({ text, className = "" }) => {
 
 const projects = [
   { title: "Show Match", video: "/video show mat.mp4" },
-  { title: "Showreel", video: "https://i.imgur.com/clPJmlG.mp4" },
+  { title: "Alpha Car", video: "/car.mp4" },
   { title: "Botanica AI", video: "https://i.imgur.com/BepzB9N.mp4" },
   { title: "Essência", video: "https://i.imgur.com/BepzB9N.mp4" },
   { title: "Lumière", video: "https://i.imgur.com/BepzB9N.mp4" }
