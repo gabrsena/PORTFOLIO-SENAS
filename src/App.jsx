@@ -169,11 +169,11 @@ const DecryptedText = ({ text, className = "" }) => {
 };
 
 const projects = [
-  { title: "Show Match", video: "/video show mat.mp4" },
-  { title: "Alpha Car", video: "/car.mp4" },
-  { title: "Botanica AI", video: "https://i.imgur.com/BepzB9N.mp4" },
-  { title: "Essência", video: "https://i.imgur.com/BepzB9N.mp4" },
-  { title: "Lumière", video: "https://i.imgur.com/BepzB9N.mp4" }
+  { title: "Brand Films", video: "/video show mat.mp4" },
+  { title: "Social Shorts", video: "/car.mp4" },
+  { title: "Wedding Films", video: "https://i.imgur.com/BepzB9N.mp4" },
+  { title: "Property Tours", video: "https://i.imgur.com/BepzB9N.mp4" },
+  { title: "Corporate Films", video: "https://i.imgur.com/BepzB9N.mp4" }
 ];
 
 const App = () => {
