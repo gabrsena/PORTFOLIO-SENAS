@@ -274,7 +274,7 @@ const App = () => {
         onClick={() => scrollToSection('home')}
         style={{ scale: logoScale, originX: 0, originY: 0 }}
       >
-         <img src="LOGOF.png" alt="SENA" className="h-[3.54rem] lg:h-[4.33rem] w-auto object-contain transition-all duration-300" />
+         <img src="logo.png" alt="SENA" className="h-[3.54rem] lg:h-[4.33rem] w-auto object-contain transition-all duration-300" />
       </motion.div>
 
       <nav className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center py-4 px-8 h-[calc(3.54rem+2rem)] lg:h-[calc(4.33rem+2rem)]">
