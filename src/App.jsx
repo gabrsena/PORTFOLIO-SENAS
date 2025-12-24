@@ -173,7 +173,7 @@ const projects = [
   { title: "Shorts", video: "/car.mp4" },
   { title: "Wedding", video: "https://i.imgur.com/BepzB9N.mp4" },
   { title: "Real Estate", video: "https://i.imgur.com/BepzB9N.mp4" },
-  { title: "Corporate", video: "/institu.mp4" }
+  { title: "Corporate", video: "/institu1.mp4" }
 ];
 
 const App = () => {
