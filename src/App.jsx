@@ -171,7 +171,7 @@ const DecryptedText = ({ text, className = "" }) => {
 const projects = [
   { title: "Brand Films", video: "/video show mat.mp4" },
   { title: "Shorts", video: "/car.mp4" },
-  { title: "Wedding", video: "/wedding.mp4" },
+  { title: "Wedding", video: "/wedding3.mp4" },
   { title: "Real Estate", video: "https://i.imgur.com/BepzB9N.mp4" },
   { title: "Corporate", video: "/institu1.mp4" }
 ];
