@@ -170,10 +170,10 @@ const DecryptedText = ({ text, className = "" }) => {
 
 const projects = [
   { title: "Brand Films", video: "/video show mat.mp4" },
-  { title: "Social Shorts", video: "/car.mp4" },
-  { title: "Wedding Films", video: "https://i.imgur.com/BepzB9N.mp4" },
-  { title: "Property Tours", video: "https://i.imgur.com/BepzB9N.mp4" },
-  { title: "Corporate Films", video: "https://i.imgur.com/BepzB9N.mp4" }
+  { title: "Shorts", video: "/car.mp4" },
+  { title: "Wedding", video: "https://i.imgur.com/BepzB9N.mp4" },
+  { title: "Real Estate", video: "https://i.imgur.com/BepzB9N.mp4" },
+  { title: "Corporate", video: "https://i.imgur.com/BepzB9N.mp4" }
 ];
 
 const App = () => {
